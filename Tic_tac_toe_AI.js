@@ -76,26 +76,21 @@ function is_win_condition(game) {
 
 // Use to change size of game. By default n = 3
 function change_board(n) {
-    if (is_win_condition() || round === size * size || round === 0) {
-        size = n;
-        new_game();
-        display("-------------");
-        return "Tic-tac-toe " + stringify(n) + "x" + stringify(n) + " board";
-    } else {
-        return "Finish current game or reset game";
-    }
+    size = n;
+    display("Changed to " + n + "x" + n + " board");
+    display("Type start(); to begin");
 }
 
-// Use to start a new game
-function new_game() {
+// Use to create a new game
+function start() {
     function who_first() {
         const u_first = prompt("Go First? Y/N");
         if (u_first === "Y" || u_first === "y") {
             turn = "Player";
-            return turn + " next (X)";
+            next();
         } else if (u_first === "N" || u_first === "n") {
             turn = "Computer";
-            return turn + " next (O)";
+            next();
         } else {
             who_first();
         }
@@ -104,37 +99,36 @@ function new_game() {
     round = 0;
     com_prev = null;
     your_prev = null;
-
-    // show Board
-    display("Round " + stringify(round));
-    display("-------------");
     for (let i = 0; i < size; i = i + 1) {
         game[i] = [];
         for (let j = 0; j < size; j = j + 1) {
             game[i][j] = stringify(size * i + j + 1);
         }
-        display(game[i]);
     }
 
-    return who_first();
+    who_first();
 }
 
-// Use to continue game and recieve prompt for next move
+// Use to start new game
 function next() {
     //Functions Declaration
+    //For prompting
     function display_state() {
-        display("Round " + stringify(round));
+        const first = "Round " + stringify(round);
+        let second = "";
+        let third = "";
         if (turn === "Computer") {
-            display("Player's Last move - X to " + stringify(your_prev));
-            display("Computer's Last move - O to " + stringify(com_prev));
+            second = "Player's Last move - X to " + stringify(your_prev);
+            third = "Computer's Last move - O to " + stringify(com_prev);
         } else {
-            display("Computer's Last move - O to " + stringify(com_prev));
-            display("Player's Last move - X to " + stringify(your_prev));
+            second = "Computer's Last move - O to " + stringify(com_prev);
+            third = "Player's Last move - X to " + stringify(your_prev);
         }
-        display("-------------");
+        let fourth = "";
         for (let i = 0; i < size; i = i + 1) {
-            display(game[i]);
+            fourth = fourth + "\n" + stringify(game[i]);
         }
+        return first + "\n" + second + "\n" + third + "\n" + fourth;
     }
 
     function is_valid_move(val, game) {
@@ -143,14 +137,17 @@ function next() {
     }
 
     function your_move() {
-        your_prev = prompt("Player's move (X)");
-        your_prev = parse_int(your_prev, 10);
+        let temp = prompt(display_state() + "\n" + "Player's move (X)");
+        temp = parse_int(temp, 10);
 
         // Re-prompt player for a valid move
-        while (!is_valid_move(your_prev, game) || your_prev < 1 || your_prev > size * size) {
-            your_prev = prompt("Invalid Move - Player's Move (X)");
-            your_prev = parse_int(your_prev, 10);
+        while (temp !== temp || !is_valid_move(temp, game) ||
+            temp < 1 || temp > size * size) {
+            temp = prompt(display_state() + "\n" + "Invalid Move - Player's Move (X)");
+            temp = parse_int(temp, 10);
         }
+
+        your_prev = temp;
 
         // Place move piece
         game[math_floor((your_prev - 1) / size)][(your_prev - 1) % size] = "X";
@@ -265,38 +262,44 @@ function next() {
     }
 
     // Running code
+    round = round + 1;
+
+    if (turn === "Computer") {
+        com_move();
+    } else {
+        your_move();
+    }
+
     if (is_win_condition(game)) {
-        return turn + " WINS \n Start New?";
+        const fresh = prompt(display_state() + "\n" + turn + " WINS" +
+            "\n" + "Type 'N' to start new game");
+        if (fresh === "n" || fresh === "N") {
+            start();
+        } else {
+            if (turn === "Computer") {
+                display("You LOSE");
+            } else {
+                display("You WIN");
+            }
+        }
     } else {
         if (round === size * size) {
-            // Did not win and no more available moves
-            return "Tie Game \n Start New?";
-        } else {
-            round = round + 1;
-
-            if (turn === "Computer") {
-                com_move();
+            const fresh = prompt(display_state() + "\n" + "Tie Game" +
+                "\n" + "Type 'N' to start new game");
+            if (fresh === "n" || fresh === "N") {
+                start();
             } else {
-                your_move();
+                display("Tie Game");
             }
-
-            display_state();
-
-            if (is_win_condition(game)) {
-                return turn + " WINS";
+        } else {
+            if (turn === "Computer") {
+                turn = "Player";
+                next();
             } else {
-                if (round === size * size) {
-                    return "Tie Game";
-                } else {
-                    if (turn === "Computer") {
-                        turn = "Player";
-                        return turn + " next (X)";
-                    } else {
-                        turn = "Computer";
-                        return turn + " next (O)";
-                    }
-                }
+                turn = "Computer";
+                next();
             }
         }
     }
+
 }
