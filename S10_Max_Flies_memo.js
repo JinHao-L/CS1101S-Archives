@@ -29,26 +29,17 @@ function memo_max_flies_to_eat(tile_flies) {
     const breadth = array_length(tile_flies[0]);
     
     function helper(i, j) {
-        if (i >= depth) {
+        if (i >= depth || j < 0 || j >= breadth) {
             return 0;
         } else {
             if (read(i, j) !== undefined) {
                 return mem[i][j];
             } else {
                 const current = tile_flies[i][j];
-                let left = 0;
-                let right = 0;
-                if(j === 0) {
-                } else {
-                    left = current + helper(i+1, j-1);
-                }
-                const center = current + helper(i+1, j);
-                if(j === breadth-1) {
-                } else {
-                    right = current + helper(i+1, j+1);
-                }
-                
-                const x = math_max(left, center, right);
+                const left = helper(i+1, j-1);
+                const center = helper(i+1, j);
+                const right = helper(i+1, j+1);
+                const x = current + math_max(left, center, right);
                 write(i, j, x);
                 return x;
             }
@@ -68,5 +59,6 @@ const tile_flies = [[3, 1, 7, 4, 2],
                     [2, 2, 1, 5, 3],
                     [2, 1, 4, 4, 4],
                     [5, 7, 2, 5, 1]];
+// const tile_flies = make_tiles(5, 6, 10);
 display(tile_flies);
 memo_max_flies_to_eat(tile_flies);
