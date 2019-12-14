@@ -1,5 +1,6 @@
-# CS1101S-Archives
-For archiving Source codes
+# CS1101S
+
+For archiving Source codes - Programs made during the course CS1101S Programming Methodology
 - Missions
 - Reflections
-- Personal coding projects
+- Personal mini-projects
