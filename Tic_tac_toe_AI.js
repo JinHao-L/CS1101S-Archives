@@ -141,8 +141,8 @@ function next() {
         temp = parse_int(temp, 10);
 
         // Re-prompt player for a valid move
-        while (temp !== temp || !is_valid_move(temp, game) ||
-            temp < 1 || temp > size * size) {
+        while (temp !== temp || temp < 1 
+               || temp > size * size || !is_valid_move(temp, game)) {
             temp = prompt(display_state() + "\n" + "Invalid Move - Player's Move (X)");
             temp = parse_int(temp, 10);
         }
